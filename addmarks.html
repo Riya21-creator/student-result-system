@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Marks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .container {
+            width: 420px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #aaa;
+        }
+        
+        input,
+        button,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .msg {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Add Marks</h2>
+
+        <input type="number" id="student_id" placeholder="Enter Student ID" required>
+        <input type="number" id="subject_id" placeholder="Enter Subject ID" required>
+        <input type="number" id="exam_id" placeholder="Enter Exam ID" required>
+        <input type="number" id="marks_obtained" placeholder="Marks Obtained" required>
+
+        <button onclick="addMarks()">Submit</button>
+        <p class="msg" id="msg"></p>
+    </div>
+
+    <script>
+        async function addMarks() {
+            const data = {
+                student_id: document.getElementById("student_id").value,
+                subject_id: document.getElementById("subject_id").value,
+                exam_id: document.getElementById("exam_id").value,
+                marks_obtained: document.getElementById("marks_obtained").value
+            };
+
+            const res = await fetch("http://localhost:3000/marks", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+            if (result.id) {
+                document.getElementById("msg").style.color = "green";
+                document.getElementById("msg").innerText = "Marks added successfully!";
+            } else {
+                document.getElementById("msg").style.color = "red";
+                document.getElementById("msg").innerText = "Error: " + result.error;
+            }
+        }
+    </script>
+
+</body>
+
+</html>

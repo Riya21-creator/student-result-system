@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Results Viewer</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%
+        }
+        
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px
+        }
+        
+        th {
+            background: #f4f4f4
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Class Results</h2>
+    <label>Exam ID: <input id="exam" value="1" /></label>
+    <label>Class: <input id="cls" value="10A" /></label>
+    <button onclick="load()">Load</button>
+    <br/><br/>
+    <table id="tbl">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Roll</th>
+                <th>Name</th>
+                <th>Obtained</th>
+                <th>Max</th>
+                <th>%</th>
+                <th>Grade</th>
+                <th>Pass</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script>
+        async function load() {
+            const exam = document.getElementById('exam').value;
+            const cls = document.getElementById('cls').value;
+            const res = await fetch(`http://localhost:3000/results?exam_id=${exam}&class=${encodeURIComponent(cls)}`);
+            const data = await res.json();
+            const tbody = document.querySelector('#tbl tbody');
+            tbody.innerHTML = '';
+            data.results.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${r.rank}</td><td>${r.roll_no}</td><td>${r.name}</td><td>${r.total_obtained}</td><td>${r.total_max}</td><td>${r.percentage}</td><td>${r.grade}</td><td>${r.pass ? 'Yes' : 'No'}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Student Result</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+        
+        .container {
+            max-width: 850px;
+            margin: auto;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #aaa;
+        }
+        
+        select,
+        button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+        
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        th {
+            background: #444;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>View Result</h2>
+
+        <select id="exam_select"></select>
+        <select id="class_select">
+    <option value="6">Class 6</option>
+    <option value="7">Class 7</option>
+    <option value="8">Class 8</option>
+    <option value="9">Class 9</option>
+    <option value="10">Class 10</option>
+    <option value="11">Class 11</option>
+    <option value="12">Class 12</option>
+  </select>
+
+        <button onclick="loadResult()">Search</button>
+
+        <table id="result_table" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Roll No</th>
+                    <th>Name</th>
+                    <th>Total Obtained</th>
+                    <th>Total Max</th>
+                    <th>Percentage</th>
+                    <th>Grade</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="result_body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadExams() {
+            const res = await fetch("http://localhost:3000/exams");
+            const exams = await res.json();
+            document.getElementById("exam_select").innerHTML =
+                exams.map(x => `<option value="${x.id}">${x.name}</option>`).join("");
+        }
+        loadExams();
+
+        async function loadResult() {
+            const exam_id = document.getElementById("exam_select").value;
+            const className = document.getElementById("class_select").value;
+
+            const res = await fetch(`http://localhost:3000/results?exam_id=${exam_id}&class=${className}`);
+            const data = await res.json();
+            const table = document.getElementById("result_table");
+            const body = document.getElementById("result_body");
+
+            body.innerHTML = "";
+            table.style.display = "table";
+
+            data.results.forEach(r => {
+                body.innerHTML += `
+        <tr>
+          <td>${r.rank}</td>
+          <td>${r.roll_no}</td>
+          <td>${r.name}</td>
+          <td>${r.total_obtained}</td>
+          <td>${r.total_max}</td>
+          <td>${r.percentage}%</td>
+          <td>${r.grade}</td>
+          <td>${r.pass ? "PASS" : "FAIL"}</td>
+        </tr>`;
+            });
+        }
+    </script>
+
+</body>
+
+</html>
